@@ -38,10 +38,9 @@ immediately exit on failure.
 
 =item void *mgc_add(mgc_t *mgc, void *ptr, mgc_fn_free_t* fn);
 
-Append an item to C<mgc> with an associated free function.  If C<mgc> has an
-associated fail function and C<ptr> is C<NULL>, the fail function will be
-called.  Otherwise, if C<ptr> is C<NULL>, it will be discarded and C<fn> will
-not be called on cleanup.
+Append an item to C<mgc> with an associated free function.  If C<ptr> or C<fn>
+is C<NULL>, the C<failfn> function will be called if registered and C<NULL>
+will be returned without adding C<ptr> or calling C<fn>.
 
 =item mgc_fn_free_t *mgc_remove_item(mgc_t *mgc, void *ptr);
 
@@ -110,20 +109,18 @@ C<fclose> wrapper that retries in C<EINTR>.
 
 =head1 EXAMPLES
 
- mgc_t *mgc = NULL;
-
- void cleanup(void) {
-     mp_free(mgc);
+ void cleanup(mgc_t *mgc) {
+     mgc_free(mgc);
  }
 
- void die(void *unused) {
+ void die(mgc_t *mgc, void *unused) {
      perror("setup failed");
-     cleanup();
+     cleanup(mgc);
      exit(EXIT_FAIL);
  }
 
  int main(int argc, char *argv[]) {
-     mgc = mgc_new(die, NULL);
+     mgc_t *mgc = mgc_new(die, NULL);
 
      char *str = mgc_strdup("foobar");
      /* str is guaranteed to be valid */

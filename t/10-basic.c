@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "tap.c/tap.c"
+#include "../ext/tap.c/tap.c"
 
 #include "mGarbageCollector.c"
 
@@ -8,7 +8,7 @@ void freefn(void *buf) {
     strcpy((char *)buf, "bar");
 }
 
-void failfn(void *buf) {
+void failfn(mgc_t *mgc, void *buf) {
     strcpy((char *)buf, "baz");
 }
 

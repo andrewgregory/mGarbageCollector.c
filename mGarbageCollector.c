@@ -41,13 +41,13 @@ void *mgc_add(mgc_t *mgc, void *ptr, mgc_fn_free_t* fn) {
     mgc_item_t *item;
 
     if(ptr == NULL || fn == NULL) {
-        if(mgc->failfn) { mgc->failfn(mgc->failctx); }
+        if(mgc->failfn) { mgc->failfn(mgc, mgc->failctx); }
         return NULL;
     }
 
     if((item = malloc(sizeof(mgc_item_t))) == NULL) {
         fn(ptr);
-        if(mgc->failfn) { mgc->failfn(mgc->failctx); }
+        if(mgc->failfn) { mgc->failfn(mgc, mgc->failctx); }
         return NULL;
     }
 
@@ -89,10 +89,11 @@ void mgc_free_item(mgc_t *mgc, void *ptr) {
 
 mgc_t *mgc_new(mgc_fn_fail_t *failfn, void *failctx) {
     mgc_t *mgc = calloc(1, sizeof(mgc_t));
-    if(mgc) {
-        mgc->failfn = failfn;
-        mgc->failctx = failctx;
-    }
+
+    if(mgc == NULL) { failfn(NULL, failctx); }
+
+    mgc->failfn = failfn;
+    mgc->failctx = failctx;
     return mgc;
 }
 

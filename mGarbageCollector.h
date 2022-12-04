@@ -29,8 +29,10 @@
 #include <stddef.h>
 #include <stdio.h>
 
+typedef struct mgc_t mgc_t;
+
 typedef void (mgc_fn_free_t) (void*);
-typedef void (mgc_fn_fail_t) (void*);
+typedef void (mgc_fn_fail_t) (mgc_t*, void*);
 
 typedef struct mgc_item_t {
     mgc_fn_free_t *free;
